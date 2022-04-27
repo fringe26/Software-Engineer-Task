@@ -1,6 +1,6 @@
 ﻿namespace TaskWebAPI.Models
 {
-    public class InvoiceStatus
+    public enum InvoiceStatus
     {
 
     }

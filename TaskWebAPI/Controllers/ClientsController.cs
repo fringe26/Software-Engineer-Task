@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TaskWebAPI.DTO.Clients;
 using TaskWebAPI.Models;
 using TaskWebAPI.Services;
 
 namespace TaskWebAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ClientsController : Controller

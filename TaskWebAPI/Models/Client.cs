@@ -10,7 +10,7 @@ namespace TaskWebAPI.Models
         public string? Email { get; set; }
         public string? Address { get; set; }
 
-        //public User Owner { get; set; }
+        public User Owner { get; set; }
         //public int OwnerId { get; set; }
 
     }

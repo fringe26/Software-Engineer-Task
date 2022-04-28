@@ -12,8 +12,8 @@ using TaskWebAPI.Data;
 namespace TaskWebAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220427183253_InitialCreateClient")]
-    partial class InitialCreateClient
+    [Migration("20220428203521_initialize")]
+    partial class initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -33,11 +33,9 @@ namespace TaskWebAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -63,11 +61,9 @@ namespace TaskWebAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -83,22 +79,20 @@ namespace TaskWebAPI.Migrations
                         .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Surname")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("TaskWebAPI.Models.Client", b =>
                 {
                     b.HasOne("TaskWebAPI.Models.User", "Owner")
-                        .WithMany("MyProperty")
+                        .WithMany("MyClients")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -108,7 +102,7 @@ namespace TaskWebAPI.Migrations
 
             modelBuilder.Entity("TaskWebAPI.Models.User", b =>
                 {
-                    b.Navigation("MyProperty");
+                    b.Navigation("MyClients");
                 });
 #pragma warning restore 612, 618
         }

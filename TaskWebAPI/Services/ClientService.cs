@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using TaskWebAPI.Data;
 using TaskWebAPI.DTO.Clients;
 using TaskWebAPI.Models;
 
@@ -13,9 +15,11 @@ namespace TaskWebAPI.Services
             new Client {Name = "Tural"}
         };
         private readonly IMapper _mapper;
-        public ClientService(IMapper mapper)
+        private readonly DataContext _context;
+        public ClientService(IMapper mapper,DataContext context)
         {
             _mapper= mapper;
+            _context= context;
         }
 
         public async Task<ServiceResponse<List<GetClientDTO>>> AddClient(AddClientDTO client)
@@ -24,23 +28,26 @@ namespace TaskWebAPI.Services
             //clients.Add(_mapper.Map<Client>(client));
             
             Client temp_client = _mapper.Map<Client>(client);
-            temp_client.Id = clients.Max(c=>c.Id)+1;
-            clients.Add(temp_client);
-            serviceResponse.Data = clients.Select(c => _mapper.Map<GetClientDTO>(c)).ToList();
+            await _context.Clients.AddAsync(temp_client);
+            await _context.SaveChangesAsync();
+
+            serviceResponse.Data = _context.Clients.Select(c => _mapper.Map<GetClientDTO>(c)).ToList();
             return serviceResponse;
         }
 
         public async Task<ServiceResponse<List<GetClientDTO>>> GetAllClients()
         {
             ServiceResponse<List<GetClientDTO>> serviceResponse = new ServiceResponse<List<GetClientDTO>>();
-            serviceResponse.Data = clients.Select(c => _mapper.Map<GetClientDTO>(c)).ToList();
+            List<Client> dbClients = await _context.Clients.ToListAsync();
+            serviceResponse.Data = dbClients.Select(c => _mapper.Map<GetClientDTO>(c)).ToList();
             return serviceResponse;
         }
 
         public async Task<ServiceResponse<GetClientDTO>> GetClientById(int id)
         {
-            ServiceResponse<GetClientDTO> serviceResponse = new ServiceResponse<GetClientDTO>();   
-            serviceResponse.Data = _mapper.Map<GetClientDTO>(clients.FirstOrDefault(c => c.Id == id));
+            ServiceResponse<GetClientDTO> serviceResponse = new ServiceResponse<GetClientDTO>();
+            
+            serviceResponse.Data = _mapper.Map<GetClientDTO>(await _context.Clients.FirstAsync(c => c.Id == id));
 
             return serviceResponse;
         }
@@ -49,8 +56,11 @@ namespace TaskWebAPI.Services
         {
             ServiceResponse<GetClientDTO> serviceResponse = new ServiceResponse<GetClientDTO>(); // esli ID net ?
             try {
-                Client temp_client = clients.FirstOrDefault(c=>c.Id== client.Id);
+                Client temp_client = await _context.Clients.FirstAsync(c=>c.Id== client.Id);
                 temp_client.Name = client.Name;
+
+                _context.Clients.Update(temp_client);
+                await _context.SaveChangesAsync();
                 serviceResponse.Data = _mapper.Map<GetClientDTO>(temp_client);
             }
             catch (Exception e) 
@@ -67,8 +77,9 @@ namespace TaskWebAPI.Services
             ServiceResponse<List<GetClientDTO>> serviceResponse = new ServiceResponse<List<GetClientDTO>>();
             try
             {
-                clients.Remove(clients.First(c => c.Id == id));
-                serviceResponse.Data = clients.Select(c=>_mapper.Map<GetClientDTO>(c)).ToList();
+                _context.Clients.Remove(await _context.Clients.FirstAsync(c => c.Id == id));
+                await _context.SaveChangesAsync();
+                serviceResponse.Data = _context.Clients.Select(c=>_mapper.Map<GetClientDTO>(c)).ToList();
             }
             catch (Exception e)
             { 

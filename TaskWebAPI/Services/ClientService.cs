@@ -9,11 +9,11 @@ namespace TaskWebAPI.Services
     public class ClientService : IClientService
     {
 
-        private static List<Client> clients = new List<Client>
-        {
-            new Client(),
-            new Client {Name = "Tural"}
-        };
+        //private static List<Client> clients = new List<Client>
+        //{
+        //    new Client(),
+        //    new Client {Name = "Tural"}
+        //};
         private readonly IMapper _mapper;
         private readonly DataContext _context;
         public ClientService(IMapper mapper,DataContext context)
